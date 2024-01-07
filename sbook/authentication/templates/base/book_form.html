@@ -1,0 +1,66 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+
+<div class="container mt-5"> 
+    <form method="POST" action="" class="col-md-6 mx-auto">
+        {% csrf_token %}
+        
+        <link rel="stylesheet" href="{% static 'vendors/styles/book_form.css' %}">
+        
+        <div class="form-group">
+            <label for="{{ form.host.id_for_label }}">Host:</label>
+            {{ form.host }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.topic.id_for_label }}">Topic:</label>
+            {{ form.topic }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Name:</label>
+            {{ form.name }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Description:</label>
+            {{ form.description }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+{% endblock content %}
+
+
+
+
+{% comment %} {% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div> 
+    <form method="POST" action="">
+      
+<link rel="stylesheet" href="{% static 'vendors/styles/book_form.css' %}">
+
+         {% csrf_token %}
+        {{form.as_p}}
+        <!-- Look More On csrf token -->
+      
+
+       <input type="submit" value="Submit"/>
+
+    </form>
+</div>
+
+
+{% endblock content %} {% endcomment %}

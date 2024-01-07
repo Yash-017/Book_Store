@@ -1,0 +1,93 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Books</title>
+</head>
+<body>
+
+
+
+<link rel="stylesheet" type="text/css" href="{% static 'vendors/styles/core.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'vendors/styles/icon-font.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'vendors/styles/style.css' %}">
+
+
+
+
+
+<!-- horizontal Basic Forms Start -->
+<div class="pd-20 card-box mb-30">
+    <div class="clearfix">
+        <div class="pull-left">
+            <h4 class="text-blue h4">Upload Books</h4>
+        </div>
+    </div>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.title.id_for_label }}">Title:</label>
+            <input class="form-control" placeholder="Title" type="text" name="{{ form.title.name }}">
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    <label class="weight-600">Visibility:</label>
+                    <div class="custom-control custom-checkbox mb-5">
+                        <input type="checkbox" class="custom-control-input" id="{{ form.visibility.id_for_label }}" name="{{ form.visibility.name }}">
+                        <label class="custom-control-label" for="{{ form.visibility.id_for_label }}">Visible</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.year_of_published.id_for_label }}">Year of Published:</label>
+            <input type="text" class="form-control" name="{{ form.year_of_published.name }}">
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Description:</label>
+            <input type="text" class="form-control" name="{{ form.description.name }}">
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.cost.id_for_label }}">Cost:</label>
+            <input type="text" class="form-control" name="{{ form.cost.name }}">
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.file.id_for_label }}">File:</label>
+            <input type="file" class="form-control-file form-control height-auto" name="{{ form.file.name }}">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
+    <div class="collapse collapse-box" id="horizontal-basic-form1">
+        <div class="code-box">
+            <div class="clearfix">
+                <a href="javascript:;" class="btn btn-primary btn-sm code-copy pull-left" data-clipboard-target="#horizontal-basic">
+                    <i class="fa fa-clipboard"></i> Copy Code
+                </a>
+                <a href="#horizontal-basic-form1" class="btn btn-primary btn-sm pull-right" rel="content-y" data-toggle="collapse" role="button">
+                    <i class="fa fa-eye-slash"></i> Hide Code
+                </a>
+            </div>
+            <pre><code class="xml copy-pre" id="horizontal-basic">
+                <!-- Your code here -->
+            </code></pre>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+{% endblock content %}

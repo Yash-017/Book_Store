@@ -1,0 +1,88 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'styles/book_list.css' %}">
+<div class="home-container">
+    
+    <a href="{% url 'create-book' %}" class="btn btn-primary">Create Book</a>
+</div>
+
+<div class="table-container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Topic</th>
+                <th>Host</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <td>{{ book.id }}</td>
+                <td><a href="{% url 'books' book.id %}">{{ book.name }}</a></td>
+                <td>{{ book.topic.name }}</td>
+                <td>@{{ book.host.username }}</td>
+                <td>
+                    <a href="{% url 'update-book' book.id %}" class="btn btn-warning">Edit</a>
+                    <a href="{% url 'delete-book' book.id %}" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}
+
+
+{% comment %} {% block content %}
+
+
+
+    <div class = "home-container">
+        
+       
+        </div>     
+
+
+
+        <div>
+
+             <a href="{% url 'create-book' %}"> Create Book </a>      
+
+        <div>
+
+            {% for book in books %}
+            <div>  
+                <a href = "{% url 'update-book' book.id %}">Edit</a>
+
+                <a href = "{% url 'delete-book' book.id %}">Delete</a>
+                             
+                <span>@{{book.host.username}}</span>
+                <h5>{{book.id}} --> <a href="{% url 'books' book.id %}">{{book.name}}</h5>
+
+                   
+                    <small>{{book.topic.name}}</small>
+                     <!-- breakline--> 
+                    <hr>
+
+            </div>
+
+            {% endfor %}
+        </div>
+
+
+
+        </div>
+
+       
+    </div>
+
+
+
+{% endblock content %} {% endcomment %}
+
