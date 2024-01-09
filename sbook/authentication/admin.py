@@ -14,3 +14,5 @@ admin.site.register(Topic)
 admin.site.register(Message)
 admin.site.register(Nuser, CustomUserAdmin)
 
+
+

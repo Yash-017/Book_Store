@@ -166,6 +166,8 @@ def createBook(request):
 
 
 @login_required(login_url='/login')
+#update_book
+
 def updateBook(request, pk):
     
     book = Book.objects.get(id=pk)
