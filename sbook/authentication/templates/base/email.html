@@ -1,21 +1,4 @@
-<!-- templates/send_email.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Send Email</title>
-</head>
-<body>
-    <h1>Send Email</h1>
-    {% if message %}
-        <p>{{ message }}</p>
-    {% endif %}
-    <form method="post" action="">
-        {% csrf_token %}
-        <label for="recipient_email">Recipient Email:</label>
-        <input type="email" name="recipient_email" required>
-        <button type="submit">Send Email</button>
-    </form>
-</body>
-</html>
+<!-- templates/email_sent.html -->
+
+<h1>Email Sent</h1>
+<p>Your email has been sent successfully.</p>

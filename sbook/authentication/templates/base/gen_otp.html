@@ -1,12 +1,26 @@
-<!-- generate_otp.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generated OTP</title>
+    <title>Email Notification Form</title>
 </head>
 <body>
-    <h2>Your One-Time Password (OTP) is: {{ otp_value }}</h2>
+    <h1>Email Notification Form</h1>
+
+    <button id="sendButton">Send Email to Self</button>
+
+    <script>
+        document.getElementById('sendButton').addEventListener('click', function() {
+            // Assuming 'Send_mail_from' is available globally
+            Send_mail_from({
+                method: "POST",
+                subject: "Test Subject",
+                message: "Test Message",
+                email: "your_email@example.com"  // Replace with your email address
+            });
+        });
+    </script>
 </body>
 </html>

@@ -26,7 +26,7 @@ urlpatterns = [
     path('auth_sell/', views.user_list , name='auth_sell'),
     path('upload_books/', views.upload_books, name='upload_books'),
     path('uploaded_files/', views.uploaded_files, name='uploaded_files'),
-    path('generate_otp/', views.generate_otp, name='generate_otp'),
+    #path('generate_otp/', views.send_email, name='generate_otp'),
     path('verify_otp/', views.verify_otp, name='verify_otp'),
     
 

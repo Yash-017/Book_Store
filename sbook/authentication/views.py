@@ -1,10 +1,12 @@
 
 import random
+import smtplib
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.contrib import messages
-from authentication.emails import send_otp,send_mail
+import pyotp
+
 
 from .decorators import redirect_if_no_files
 from .models import Book, Topic,Nuser,UploadedFile
@@ -64,37 +66,137 @@ def loginPage(request):
     context = {'page':page}
     return render(request, 'base/login_register.html', context)
 
+# def loginPage2(request):
+#     page='login_2'
+#     if request.user.is_authenticated:
+#         return redirect('home')
+
+#     if request.method == 'POST' :
+#         username = request.POST.get('username').lower()
+#         password = request.POST.get('password')       
+
+#         user = authenticate(request, username=username, password=password)   
+
+#         if user is not None:
+#             login(request, user)
+#             if not user.is_verified:
+#                 recipient_email = user.username
+#                 generate_and_send_otp(recipient_email)
+#                 return redirect('verify_otp')
+
+#             return redirect('data-list')
+        
+#         else:
+#             messages.error(request, 'Username and Password does not match')
+#     context = {'page':page}
+#     return render(request, 'base/login_2.html', context)
+
+# @login_required
+# def verify_otp(request):
+#     if request.method == 'POST':
+#         otp = request.POST.get('otp')
+
+#         # Verify OTP using pyotp
+#         totp = pyotp.TOTP(request.user.otp_secret_key)
+#         if totp.verify(otp):
+#             # Mark the user as verified
+#             request.user.is_verified = True
+#             request.user.save()
+
+#             messages.success(request, 'OTP verified successfully.')
+#             return redirect('data_list')  # Replace with your desired URL after successful verification
+#         else:
+#             messages.error(request, 'Invalid OTP. Please try again.')
+
+#     return render(request, 'verify_otp.html')
+
+# def generate_and_send_otp(user):
+#     totp = pyotp.TOTP(user.otp_secret_key)
+#     otp = totp.now()  # Generate a new OTP
+
+#     # Send the OTP to user's email (replace with your email sending logic)
+#     send_email(user.email, "Verify your OTP", f"Your OTP is: {otp}")
+
 def loginPage2(request):
-    page='login_2'
+    page = 'login_2'
     if request.user.is_authenticated:
         return redirect('home')
 
-    if request.method == 'POST' :
+    if request.method == 'POST':
         username = request.POST.get('username').lower()
         password = request.POST.get('password')
 
-        # try:
-        #     user = User.objects.get(username=username)
-        # except:
-        #     messages.error(request, 'User Does Not Exists')
-
-        user = authenticate(request, username=username, password=password)   
+        user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
-            return redirect('data-list')
-        
+            if not user.is_verified:
+                generate_and_send_otp(user)
+                return redirect('verify_otp')
+
+            return redirect('/data_list')
+
         else:
-            messages.error(request, 'Username and Password does not match')
-
-
-
-    context = {'page':page}
+            messages.error(request, 'Username and Password do not match')
+    context = {'page': page}
     return render(request, 'base/login_2.html', context)
 
+@login_required
+def verify_otp(request):
+    if request.method == 'POST':
+        otp = request.POST.get('otp')
+
+        # Verify OTP using pyotp
+        if validate_otp(request.user, otp):
+            # Mark the user as verified
+            request.user.is_verified = True
+            request.user.save()
+
+            messages.success(request, 'OTP verified successfully.')
+            return redirect('/data_list')  # Replace with your desired URL after successful verification
+        else:
+            messages.error(request, 'Invalid OTP. Please try again.')
+
+    return render(request, 'base/verify_otp.html')
+
+def generate_and_send_otp(user):
+    # Generate a new OTP for each login attempt
+    totp = pyotp.TOTP(pyotp.random_base32())
+    otp = totp.now()
+
+    # Save the current OTP in the user's session for validation
+    user.otp_secret_key = otp
+    user.save()
+
+    # Send the OTP to the user's email (replace with your email sending logic)
+    send_email(user.email, "Verify your OTP", f"Your OTP is: {otp}")
+
+def validate_otp(user, entered_otp):
+    # Validate the entered OTP against the stored OTP in the user's session
+    return user.otp_secret_key == entered_otp
+
+def send_email(recipient_email, subject, message):
+    try:
+       
+        send_mail(subject, message, 'birajdaryash01@gmail.com', [recipient_email], fail_silently=False)
+
+        # For testing purposes, just print a message
+        print(f"Email sent to {recipient_email} with subject: {subject}")
+        return True  # Return True if the email is sent successfully
+    except Exception as e:
+        print(f"Error sending email: {e}")
+        return False  # Return False if there is an error sending the email
+    
+
 def logoutUser(request):
+    request.user.is_verified = False
+    request.user.save()
     logout(request)
     return redirect('home')
+
+
+    
+    
 
 def registerPage(request):
     form = UserCreationForm()
@@ -337,35 +439,35 @@ class RegisterAPI(APIView):
 # views.py
 
 
-from .forms import OTPVerificationForm
+# from .forms import OTPVerificationForm
 
-def generate_otp(request):
-    user = request.user
-    if user.is_authenticated:
-        otp_value = user.generate_otp()
-        return render(request, 'generate_otp.html', {'otp_value': otp_value})
-    else:
-        return redirect('login')
+# def generate_otp(request):
+#     user = request.user
+#     if user.is_authenticated:
+#         otp_value = user.generate_otp()
+#         return render(request, 'generate_otp.html', {'otp_value': otp_value})
+#     else:
+#         return redirect('login')
 
-def verify_otp(request):
-    user = request.user
-    if user.is_authenticated:
-        if request.method == 'POST':
-            form = OTPVerificationForm(request.POST)
-            if form.is_valid():
-                otp_value = form.cleaned_data['otp']
-                if user.verify_otp(otp_value):
-                    user.is_verified = True
-                    user.save()
-                    return redirect('home')
-                else:
-                    # Handle invalid OTP (e.g., show error message)
-                    pass
-        else:
-            form = OTPVerificationForm()
-        return render(request, 'base/email.html', {'form': form})
-    else:
-        return redirect('login')
+# def verify_otp(request):
+#     user = request.user
+#     if user.is_authenticated:
+#         if request.method == 'POST':
+#             form = OTPVerificationForm(request.POST)
+#             if form.is_valid():
+#                 otp_value = form.cleaned_data['otp']
+#                 if user.verify_otp(otp_value):
+#                     user.is_verified = True
+#                     user.save()
+#                     return redirect('home')
+#                 else:
+#                     # Handle invalid OTP (e.g., show error message)
+#                     pass
+#         else:
+#             form = OTPVerificationForm()
+#         return render(request, 'base/email.html', {'form': form})
+#     else:
+#         return redirect('login')
 
 
 class UploadedFilesView(APIView):
@@ -375,3 +477,31 @@ class UploadedFilesView(APIView):
         files = UploadedFile.objects.filter(user=request.user)
         serializer = UploadedFileSerializer(files, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+
+
+
+# views.py
+
+from django.core.mail import send_mail
+# from django.shortcuts import render
+
+# def send_email(request):
+#     subject = 'Subject of the email'
+#     message = 'Body of the email.'
+#     from_email = settings.EMAIL_HOST_USER  # Replace with your Gmail address
+#     recipient_list = ['yashbiraj@gmail.com']  # Replace with your email address or a list of recipients
+
+#     send_mail(subject, message, from_email, recipient_list)
+
+#     return render(request, 'base/email.html')
+
+   
+
+    
+
+    
+       
+

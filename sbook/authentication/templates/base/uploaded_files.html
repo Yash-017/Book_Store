@@ -337,7 +337,7 @@
 					<div class="row">
 						<div class="col-md-6 col-sm-12">
 							<div class="title">
-								<!-- Your existing content in data-list.html -->
+							
 
 {% if messages %}
   <ul class="messages">
@@ -360,10 +360,11 @@
 						
 					</div>
 				</div>
-				<!-- basic table  Start -->
 				
-				<!-- basic table  End -->
-				<!-- Bordered table  start -->
+				<div class="pd-20 card-box mb-30">
+					<div class="clearfix mb-20">
+						<div class="pull-left">
+							<h4 class="text-blue h4">Uploaded Files</h4>
 				
     
     <table class="table table-bordered">
@@ -379,9 +380,8 @@
     </thead>
     <tbody>
 
-      </div>
-					</div>
-				</div>
+     
+					
       {% for file in files %}
         <tr>
           <td>{{ file.title }}</td>
@@ -390,7 +390,7 @@
           <td>{{ file.year_of_published }}</td>
           <td><p><a href="{{ file.file.url }}" target="_blank">{{ file.file.name }}</a></p>
 </td>
-          <!-- Add more fields as needed -->
+          
         </tr>
       {% endfor %}
     </tbody>
@@ -398,29 +398,7 @@
   </div>
 
 					
-					<div class="collapse collapse-box" id="border-table">
-						<div class="code-box">
-							<div class="clearfix">
-								<a href="javascript:;" class="btn btn-primary btn-sm code-copy pull-left"  data-clipboard-target="#border-table-code"><i class="fa fa-clipboard"></i> Copy Code</a>
-								<a href="#border-table" class="btn btn-primary btn-sm pull-right" rel="content-y"  data-toggle="collapse" role="button"><i class="fa fa-eye-slash"></i> Hide Code</a>
-							</div>
-							<pre><code class="xml copy-pre" id="border-table-code">
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th scope="row">1</th>
-    </tr>
-  </tbody>
-</table>
-							</code></pre>
-						</div>
-					</div>
-				</div>
+					
 				<!-- Bordered table End -->
 				<!-- Striped table start -->
 				

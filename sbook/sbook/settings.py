@@ -174,7 +174,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'birajdaryash01@gmail.com'
-EMAIL_PASS = "yxzy weju zwiw rzrp"
+EMAIL_HOST_PASSWORD = "prsr mlfm qoof jhgh"
 
 DJOSER = {
     'LOGIN_FIELD' : 'email',
