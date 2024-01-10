@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from authentication.models import Nuser
+from authentication.models import Nuser, UploadedFile
 
 class UserRegistraionSerializer(serializers.ModelSerializer):
     password2=serializers.CharField(style={'input_type':'password'},
@@ -36,3 +36,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model=Nuser        
         field = ['id','email','name']
         
+
+
+class UserSerializer(serializers.ModelSerializer):
+        class Meta:
+            model=Nuser
+            fields=['email', 'password','is_verified']
+
+
+class UploadedFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadedFile
+        fields = '__all__'

@@ -1,10 +1,14 @@
 
+import random
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 
+from authentication.emails import send_otp,send_mail
+
 from .decorators import redirect_if_no_files
 from .models import Book, Topic,Nuser,UploadedFile
-from .forms import BookForm,LoginForm,UploadedFileForm
+from .forms import BookForm,UploadedFileForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -12,8 +16,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView
+from .forms import NuserCreationForm
 
-
+from django.views.decorators.csrf import csrf_exempt
 
 
 #
@@ -92,7 +97,6 @@ def logoutUser(request):
     return redirect('home')
 
 def registerPage(request):
-    #page='register'
     form = UserCreationForm()
 
     if request.method=='POST':
@@ -110,13 +114,13 @@ def registerPage(request):
 
 def registerPage2(request):   
     if request.method == 'POST':
-        form = LoginForm(request.POST)
+        form = NuserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             
             return redirect('home')
     else:
-        form = LoginForm()
+        form = NuserCreationForm()
 
     return render(request, 'base/register.html', {'form': form})
 
@@ -149,7 +153,7 @@ def books(request,pk):
     return render(request,'base/books.html',context)
 
 
-@login_required(login_url='/login')
+@login_required(login_url='/login_2')
 def createBook(request):
     form = BookForm()
 
@@ -165,7 +169,7 @@ def createBook(request):
     return render(request, 'base/book_form.html',context)
 
 
-@login_required(login_url='/login')
+@login_required(login_url='/login_2')
 #update_book
 
 def updateBook(request, pk):
@@ -198,7 +202,7 @@ def updateBook(request, pk):
 
 #     return render (request, 'base/delete_fomr.html', context)
 
-@login_required(login_url='/login')
+@login_required(login_url='/login_2')
 def deleteBook(request,pk):
     book = Book.objects.get(id=pk)
     if request.method == 'POST':
@@ -218,7 +222,7 @@ def user_list(request):
 
 
 
-
+@login_required(login_url='/login_2')
 def upload_books(request):
     if request.method == 'POST':
         form = UploadedFileForm(request.POST, request.FILES)
@@ -231,11 +235,13 @@ def upload_books(request):
 
     return render(request, 'base/upload_books.html', {'form': form})
 
-@login_required
+@login_required(login_url='/login_2')
 @redirect_if_no_files
 def uploaded_files(request):
-    files = UploadedFile.objects.filter(user=request.user)
+    files = UploadedFile.objects.filter(user=request.user, visibility=True)
     return render(request, 'base/uploaded_files.html', {'files': files})
+
+
 
 
 
@@ -243,12 +249,11 @@ def uploaded_files(request):
 ###########################################################################################
 ################################ JWT VIEWS ################################################
 from rest_framework.response import Response
-from authentication.serializers import UserRegistraionSerializer,UserLoginSerializer, UserProfileSerializer
+from authentication.serializers import UploadedFileSerializer, UserRegistraionSerializer,UserLoginSerializer, UserProfileSerializer,UserSerializer
 from rest_framework import status
 from django.contrib.auth import authenticate
 from authentication.renderers import UserRenderer
 from rest_framework.permissions import IsAuthenticated
-
 #jwt
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -267,9 +272,9 @@ class UserRegistrationView(APIView):
         serializer= UserRegistraionSerializer(data=request.data)
         print(request.data)
         if serializer.is_valid():
-            # serializer.username = serializer.email
+            serializer.username = serializer.email
             Nuser = serializer.save()
-            # token = get_tokens_for_user(Nuser)
+            token = get_tokens_for_user(Nuser)
             return Response({'msg':'Registration successful'},
             status=status.HTTP_201_CREATED)  
         print(serializer.errors)           
@@ -281,7 +286,7 @@ class UserLoginView(APIView):
         if serializer.is_valid(raise_exception=True):
             email = serializer.data.get('email')
             password = serializer.data.get('password')
-            authenticate(email=email, password=password)
+            Nuser=authenticate(email=email, password=password)
             if Nuser is not None: 
                 token = get_tokens_for_user(Nuser) 
                 return Response({'token':token,'msg':'Login successful'},
@@ -293,7 +298,7 @@ class UserLoginView(APIView):
 class UserProfileView(APIView):
     # renderer_classes = [UserRenderer]
     permission_classes = [IsAuthenticated]
-    print("111111")
+    #print("111111")
     def get(self,request):
         print("22222")
         print(request.user.id)
@@ -303,3 +308,72 @@ class UserProfileView(APIView):
         data['email'] = request.user.email
         data['id'] = request.user.id
         return JsonResponse(data, status.HTTP_200_OK)
+    
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
+
+@csrf_exempt
+class RegisterAPI(APIView):
+   
+    authentication_classes = [SessionAuthentication]  # Use SessionAuthentication for CSRF protection
+    permission_classes = [IsAuthenticated]  # Use IsAuthenticated permission, adjust as needed
+    def post(self,request):
+        try:
+            data=request.data
+            serializer = UserSerializer(data=data)
+            if serializer.is_valid():
+                return Response({
+                    'status':200,
+                    'message':"success check email",
+                    'data':serializer.data,
+                })
+
+            return Response({
+                'status':400,
+                'message':"something went wrong",
+                'data':serializer.errors,
+            })
+        except Exception as e:
+            print(e)
+
+# views.py
+
+
+from .forms import OTPVerificationForm
+
+def generate_otp(request):
+    user = request.user
+    if user.is_authenticated:
+        otp_value = user.generate_otp()
+        return render(request, 'generate_otp.html', {'otp_value': otp_value})
+    else:
+        return redirect('login')
+
+def verify_otp(request):
+    user = request.user
+    if user.is_authenticated:
+        if request.method == 'POST':
+            form = OTPVerificationForm(request.POST)
+            if form.is_valid():
+                otp_value = form.cleaned_data['otp']
+                if user.verify_otp(otp_value):
+                    user.is_verified = True
+                    user.save()
+                    return redirect('home')
+                else:
+                    # Handle invalid OTP (e.g., show error message)
+                    pass
+        else:
+            form = OTPVerificationForm()
+        return render(request, 'base/email.html', {'form': form})
+    else:
+        return redirect('login')
+
+
+class UploadedFilesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        files = UploadedFile.objects.filter(user=request.user)
+        serializer = UploadedFileSerializer(files, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

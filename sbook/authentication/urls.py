@@ -1,6 +1,7 @@
 from django.urls import path
-from . import views 
-from authentication.views import UserLoginView, UserRegistrationView,UserProfileView
+from . import views
+from authentication.views import RegisterAPI, UploadedFilesView, UserLoginView, UserRegistrationView,UserProfileView
+
 
 
 
@@ -25,13 +26,18 @@ urlpatterns = [
     path('auth_sell/', views.user_list , name='auth_sell'),
     path('upload_books/', views.upload_books, name='upload_books'),
     path('uploaded_files/', views.uploaded_files, name='uploaded_files'),
-
+    path('generate_otp/', views.generate_otp, name='generate_otp'),
+    path('verify_otp/', views.verify_otp, name='verify_otp'),
+    
 
     ##########################################################################
 
     path('registerjwt/', UserRegistrationView.as_view(), name = 'jwtreg'),
     path('loginjwt/', UserLoginView.as_view(), name = 'jwtlog'),
-    path('profilejwt/', UserProfileView.as_view(), name = 'profile')
+    path('profilejwt/', UserProfileView.as_view(), name = 'profile'),
+    path('uploaded-files/', UploadedFilesView.as_view(), name='uploaded-files'),
+    #path('register_twofac/', RegisterAPI.as_view(),name='register-api'),
+    
 
 
 

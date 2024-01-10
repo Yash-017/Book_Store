@@ -5,7 +5,7 @@
 <head>
 	<!-- Basic Page Info -->
 	<meta charset="utf-8">
-	<title>DeskApp - Bootstrap Admin Dashboard HTML Template</title>
+	<title>DeskApp </title>
 
 	<!-- Site favicon -->
 	<link rel="apple-touch-icon" sizes="180x180" href="{% static 'vendors/images/apple-touch-icon.png' %}">
@@ -273,8 +273,8 @@
 						</ul>
 					</li>
 					<li class="dropdown">
-						<a href="javascript:;" class="dropdown-toggle">
-							<span class="micon dw dw-edit2"></span><span class="mtext">Forms</span>
+						<a href="{% url 'upload_books' %}" class="dropdown-toggle">
+							<span class="micon dw dw-edit2"></span><span class="mtext">Upload Books</span>
 						</a>
 						<ul class="submenu">
 							<li><a href="form-basic.html">Form Basic</a></li>
@@ -472,6 +472,9 @@
 								<a href="{% url 'create-book' %}"class="btn btn-primary dropdown-toggle" href="#" role="button" data-toggle="dropdown">
 									Create Book
 								</a>
+								<a href="{% url 'auth_sell' %}"class="btn btn-primary dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+									View Sellers & Authors
+								</a>
                                
                                 <!--
 								<div class="dropdown-menu dropdown-menu-right">
@@ -487,7 +490,7 @@
 				<!-- Simple Datatable start -->
 				<div class="card-box mb-30">
 					<div class="pd-20">
-						<h4 class="text-blue h4">Data Table Simple</h4>
+						<h4 class="text-blue h4"> Book List</h4>
                         <!--
 						<p class="mb-0">you can find more options <a class="text-primary" href="https://datatables.net/" target="_blank">Click Here</a></p>
                         -->

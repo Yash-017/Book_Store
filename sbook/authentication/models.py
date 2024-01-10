@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin,Group,Permission,AbstractUser
 from django.utils import timezone
 from datetime import datetime
-
+import pyotp
+from django.core.mail import send_mail
 # Create your models here.
 
 class UserManager(BaseUserManager):
@@ -41,6 +42,31 @@ class Nuser(AbstractUser):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
+    is_verified = models.BooleanField(default=False)
+    otp_secret_key = models.CharField(max_length=32, blank=True, null=True)
+
+    def generate_otp_secret_key(self):
+        if not self.otp_secret_key:
+            self.otp_secret_key = pyotp.random_base32()
+            self.save()
+
+    def generate_otp(self):
+        self.generate_otp_secret_key()
+        totp = pyotp.TOTP(self.otp_secret_key)
+        otp_value = totp.now()
+
+        # Send the OTP to the user's email
+        self.send_otp_email(otp_value)
+
+        return otp_value
+
+    def send_otp_email(self, otp_value):
+        subject = 'Your One-Time Password (OTP)'
+        message = f'Your OTP is: {otp_value}'
+        from_email = 'birajdaryash01@gmail.com'  # Replace with your email address
+        to_email = self.email
+
+        send_mail(subject, message, from_email, [to_email])
     
     
 

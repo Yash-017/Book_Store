@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     'authentication',
     'rest_framework',
     'rest_framework_simplejwt',
-    'corsheaders'
+    'djoser',
+    'corsheaders',
+    
     
 ]
 
@@ -158,16 +160,47 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # REST FRAMEWORK
 REST_FRAMEWORK = {
-
-   
-    
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-    
-    
+    )
 }
+
+
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'birajdaryash01@gmail.com'
+EMAIL_PASS = "yxzy weju zwiw rzrp"
+
+DJOSER = {
+    'LOGIN_FIELD' : 'email',
+    'USER_CREATE_PASSWORD_RETYPE':True,
+    'ACTIVATION_URL':'/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL':True,
+    'SEND_CONFIRMATION_EMAIL':True,
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION':True,
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION_URL':'account/reset_password_confirm//{uid}/{token}',
+    'SET_PASSWORD_RETYPE':True,
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND':True,
+    'TOKEN_MODEL':None,
+     'SERIALIZERS':{
+        'user_create': 'authentication.serializers.UserCreateSerializer',
+        'user': 'authentication.serializers.UserCreateSerializer',
+        'user_delete': 'djoser.serializers.UserDeleteSerializer',
+    },
+    # 'EMAIL': {
+    #     'activation': 'account.email.ActivationEmail',
+    #     'confirmation': 'account.email.ConfirmationEmail',
+    #     'password_reset': 'account.email.PasswordResetEmail',
+    #     'password_changed_confirmation': 'account.email.PasswordChangedConfirmationEmail',
+    # },
+
+}
+
 
 
 
@@ -176,7 +209,6 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     
-
     
 
     "AUTH_HEADER_TYPES": ("Bearer",),
