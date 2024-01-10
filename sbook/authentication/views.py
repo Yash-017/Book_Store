@@ -3,7 +3,7 @@ import random
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
-
+from django.contrib import messages
 from authentication.emails import send_otp,send_mail
 
 from .decorators import redirect_if_no_files
@@ -73,10 +73,10 @@ def loginPage2(request):
         username = request.POST.get('username').lower()
         password = request.POST.get('password')
 
-        try:
-            user = User.objects.get(username=username)
-        except:
-            messages.error(request, 'User Does Not Exists')
+        # try:
+        #     user = User.objects.get(username=username)
+        # except:
+        #     messages.error(request, 'User Does Not Exists')
 
         user = authenticate(request, username=username, password=password)   
 
@@ -162,7 +162,8 @@ def createBook(request):
         form = BookForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('home')
+            messages.success(request,"Created Sucessfully")
+            return redirect('/data_list')
 
         print(request.POST)
     context = {'form' : form}
@@ -170,26 +171,21 @@ def createBook(request):
 
 
 @login_required(login_url='/login_2')
-#update_book
-
 def updateBook(request, pk):
     
     book = Book.objects.get(id=pk)
     #instance/initial
-    form = BookForm(instance=book)
-
+    form = BookForm(instance=book)    
     if request.user != book.host:
         return HttpResponse('You are not allowed here')
 
     if request.method == "POST":
         form=BookForm(request.POST, instance=book)
         if form.is_valid():
-            form.save()
-            return redirect('home')
-
-
+            form.save()           
+            messages.success(request,"Updated Sucessfully")
+            return redirect('/data_list')    
     context = {'form': form}
-    
     return render(request, 'base/book_form.html', context)
 
 # def deleteBook(request,pk):
@@ -208,7 +204,8 @@ def deleteBook(request,pk):
     if request.method == 'POST':
         #delete method
         book.delete()
-        return redirect('home')
+        messages.success(request,"Deleted Sucessfully")
+        return redirect('/data_list')
     return render(request, 'base/delete_form.html', {'obj' : book})
 
 
@@ -229,6 +226,7 @@ def upload_books(request):
         if form.is_valid():
             form.instance.user=request.user
             form.save()
+            messages.success(request,"File Uploaded Successfully")
             return redirect('uploaded_files')
     else:
         form = UploadedFileForm()

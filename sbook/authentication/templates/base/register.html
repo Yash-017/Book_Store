@@ -65,8 +65,7 @@
 						</div>
                        
 						<form method="POST" action="">
-                            
-                           
+                                                 
                             
                             
 
@@ -74,13 +73,67 @@
 							<div class="row">
 								<div class="col-sm-12">
 									<div class="input-group mb-0">
-										<!--
-											use code for form submit
-											<input class="btn btn-primary btn-lg btn-block" type="submit" value="Sign In">
-										-->
-                                       {% csrf_token %}
-                                         {{ form.as_p }}
-										<input class="btn btn-primary btn-lg btn-block" input type="submit" value=Register  ></input> <!-- href="book_list.html" -->
+										
+                                       
+    <div class="form-container">
+    <form method="POST" action="">
+        <link rel="stylesheet" type="text/css" href="{% static 'styles/login_register.css' %}">
+        {% csrf_token %}
+        <div class="input-group custom">
+		<label for="{{ form.username.id_for_label }}">Username:</label>
+{{ form.username }}
+		</div>
+       
+<div class="input-group custom">
+        <label for="{{ form.email.id_for_label }}">Email:</label>
+        {{ form.email }}
+        <!-- Add CSS classes or styling for the email field as needed -->
+		</div>
+<div class="input-group custom">
+        <label for="{{ form.password1.id_for_label }}">Password:</label>
+        {{ form.password1 }}
+        <!-- Add CSS classes or styling for the password1 field as needed -->
+		</div>
+<div class="input-group custom">
+        <label for="{{ form.password2.id_for_label }}">Confirm Password:</label>
+        {{ form.password2 }}
+        <!-- Add CSS classes or styling for the password2 field as needed -->
+</div>
+<div class="input-group custom">
+        <label for="{{ form.name.id_for_label }}">Name:</label>
+        {{ form.name }}
+        <!-- Add CSS classes or styling for the name field as needed -->
+		</div>
+<div class="input-group custom">
+        <label for="{{ form.public_visibility.id_for_label }}">Public Visibility:</label>
+        {{ form.public_visibility }}
+        <!-- Add CSS classes or styling for the public_visibility field as needed -->
+		</div>
+<div class="input-group custom">
+        <label for="{{ form.is_author.id_for_label }}">Is Author:</label>
+        {{ form.is_author }}
+        <!-- Add CSS classes or styling for the is_author field as needed -->
+		</div>
+<div class="input-group custom">
+        <label for="{{ form.is_seller.id_for_label }}">Is Seller:</label>
+        {{ form.is_seller }}
+        <!-- Add CSS classes or styling for the is_seller field as needed -->
+		</div>
+<div class="input-group custom">
+        <label for="{{ form.birthyear.id_for_label }}">Birth Year:</label>
+        {{ form.birthyear }}
+        <!-- Add CSS classes or styling for the birthyear field as needed -->
+		</div>
+<div class="input-group custom">
+        <label for="{{ form.address.id_for_label }}">Address:</label>
+        {{ form.address }}
+        <!-- Add CSS classes or styling for the address field as needed -->
+</div>
+        <input class="btn btn-primary btn-lg btn-block" input type="submit" value=Register  ></input>
+    </form>
+</div>
+
+										 <!-- href="book_list.html" -->
 									</div>
                                     <!--
 									<div class="font-16 weight-600 pt-10 pb-10 text-center" data-color="#707373">OR</div>
